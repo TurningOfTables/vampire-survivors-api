@@ -1,0 +1,33 @@
+services:
+  server:
+    build:
+      context: .
+      target: final
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    # secrets:
+    #   - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./dbschema.sql:/var/lib/postgresql/dbschema.sql
+    environment:
+      - POSTGRES_DB=vsapi
+      - POSTGRES_PASSWORD=pass
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
