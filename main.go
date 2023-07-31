@@ -8,6 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 var dbStr string = "postgresql://postgres:pass@localhost:5432/vsapi?sslmode=disable"
@@ -118,6 +120,8 @@ func getWeaponByName(c *fiber.Ctx, db *sql.DB) error {
 	if name == "" {
 		return c.Status(400).JSON("Error - query param not found")
 	}
+	cr := cases.Title(language.English)
+	name = cr.String(name)
 
 	rows, err := db.Query("SELECT * from weapons WHERE name = $1", name)
 	if err != nil {
