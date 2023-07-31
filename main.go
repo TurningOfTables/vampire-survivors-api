@@ -43,6 +43,12 @@ type Dlc struct {
 func main() {
 	log.SetLevel(log.LevelInfo)
 
+	app := initApp()
+
+	app.Listen(fmt.Sprintf("0.0.0.0:%v", port))
+}
+
+func initApp() *fiber.App {
 	db, err := sql.Open("postgres", dbStr)
 	if err != nil {
 		log.Fatal(err)
@@ -75,7 +81,7 @@ func main() {
 		return postDlcs(c, db)
 	})
 
-	app.Listen(fmt.Sprintf("0.0.0.0:%v", port))
+	return app
 }
 
 func getWeapons(c *fiber.Ctx, db *sql.DB) error {
