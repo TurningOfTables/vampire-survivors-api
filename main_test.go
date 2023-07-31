@@ -40,6 +40,15 @@ func TestGetWeapons(t *testing.T) {
 	assert.Equal(t, 200, resp.StatusCode, "GET to /weapons expects 200")
 }
 
+func TestGetWeaponById(t *testing.T) {
+	t.Parallel()
+	app := initApp()
+	req := httptest.NewRequest("GET", "/weapon/whip", nil)
+	resp, _ := app.Test(req)
+
+	assert.Equal(t, 200, resp.StatusCode, "GET to /weapon/whip expects 200")
+}
+
 func TestPostWeapons(t *testing.T) {
 	t.Parallel()
 	postBody := []Weapon{{Uuid: "abc", Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", BaseDamage: 10.5, MaxLevel: 5, Rarity: 50, Evolution: "Test Evolution", EvolvedWith: pq.StringArray{"Test Evolved With"}}}
