@@ -42,7 +42,7 @@ func TestGetWeapons(t *testing.T) {
 
 func TestPostWeapons(t *testing.T) {
 	t.Parallel()
-	postBody := []Weapon{{Id: 0, Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", BaseDamage: 10.5, MaxLevel: 5, Rarity: 50, Evolution: "Test Evolution", EvolvedWith: pq.StringArray{"Test Evolved With"}}}
+	postBody := []Weapon{{Uuid: "abc", Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", BaseDamage: 10.5, MaxLevel: 5, Rarity: 50, Evolution: "Test Evolution", EvolvedWith: pq.StringArray{"Test Evolved With"}}}
 	json, err := json.Marshal(postBody)
 	if err != nil {
 		fmt.Println("Error encoding JSON body")
@@ -89,7 +89,7 @@ func TestGetPassiveItems(t *testing.T) {
 
 func TestPostPassiveItems(t *testing.T) {
 	t.Parallel()
-	postBody := []PassiveItem{{Id: 0, Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", MaxLevel: 5, Rarity: 50}}
+	postBody := []PassiveItem{{Uuid: "abc", Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", MaxLevel: 5, Rarity: 50}}
 	json, err := json.Marshal(postBody)
 	if err != nil {
 		fmt.Println("Error encoding JSON body")
@@ -116,7 +116,7 @@ func TestGetDlcs(t *testing.T) {
 
 func TestPostDlcs(t *testing.T) {
 	t.Parallel()
-	postBody := []Dlc{{Id: 0, Name: "Test Name"}}
+	postBody := []Dlc{{Uuid: "abc", Name: "Test Name"}}
 	json, err := json.Marshal(postBody)
 	if err != nil {
 		fmt.Println("Error encoding JSON body")
