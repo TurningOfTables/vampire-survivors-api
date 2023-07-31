@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: Vampire Survivors - OpenAPI 3.0
+  description: |-
+    This is a simple and very much Work in Progress API for accessing information about various elements of the Vampire Survivors game.
+    
+    Some useful links:
+    - [Vampire Survivors Steam page](https://store.steampowered.com/app/1794680/Vampire_Survivors)
+    - [Data from Vampire Survivors wiki on Fandom](https://vampire-survivors.fandom.com/wiki/Vampire_Survivors_Wiki)
+
+  version: 0.1.0
+
+tags:
+  - name: weapons
+    description: In game weapon items
+  - name: passiveitems
+    description: In game passive items
+  - name: dlcs
+    description: Information related to DLC packs
+paths:
+  /weapons:
+    get:
+      tags:
+        - weapons
+      summary: Get all weapons
+      description: Retrieve a list of all known weapon items
+      operationId: getWeapons
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Weapon'          
+        '500':
+          description: Error reading from weapons db
+    post:
+      tags:
+        - weapons
+      summary: Add new weapons
+      description: Add one or more new weapons
+      operationId: addWeapons
+      requestBody:
+        description: Add a new weapon
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Weapon'
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid request format
+        '500':
+          description: Error creating new weapon
+  /passiveitems:
+    get:
+      tags:
+        - passiveitems
+      summary: Get all passive items
+      description: Retrieve a list of all known passive items
+      operationId: getPassiveItems
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/PassiveItem'          
+        '500':
+          description: Error reading from passive items db
+    post:
+      tags:
+        - passiveitems
+      summary: Add new passive items
+      description: Add one or more new passive items
+      operationId: addPassiveItem
+      requestBody:
+        description: Add a new passive item
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PassiveItem'
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid request format
+        '500':
+          description: Error creating new passive item
+  /dlc:
+    get:
+      tags:
+        - dlcs
+      summary: Get all dlcs
+      description: Retrieve a list of all known dlcs
+      operationId: getDlcs
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Dlc'          
+        '500':
+          description: Error reading from dlc db
+    post:
+      tags:
+        - dlcs
+      summary: Add new dlc
+      description: Add one or more new dlcs
+      operationId: addDlc
+      requestBody:
+        description: Add a new dlc
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Dlc'
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid request format
+        '500':
+          description: Error creating new dlc
+components:
+  schemas:
+    Weapon:
+      required:
+        - Id
+        - Name
+        - Description
+        - UnlockRequirements
+        - Dlc
+        - BaseDamage
+        - MaxLevel
+        - Rarity
+        - Evolution
+        - EvolvedWith
+      type: object
+      properties:
+        Id:
+          type: integer
+          example: 10
+        Name:
+          type: string
+          example: Whip
+        Description:
+          type: string
+          example: Attacks horizontally, passes through enemies
+        UnlockRequirements:
+          type: string
+          example: Unlocked by default
+        Dlc:
+          type: string
+          example: Base
+        BaseDamage:
+          type: number
+          format: float
+          example: 10.0
+        MaxLevel:
+          type: integer
+          example: 8
+        Rarity:
+          type: integer
+          example: 100
+        Evolution:
+          type: string
+          example: Bloody Tear
+        EvolvedWith:
+          type: array
+          example: ["Hollow Heart"]
+          items:
+            type: string
+    PassiveItem:
+      required:
+        - Id
+        - Name
+        - Description
+        - UnlockRequirements
+        - Dlc
+        - MaxLevel
+        - Rarity
+      type: object
+      properties:
+        Id:
+          type: integer
+          example: 10
+        Name:
+          type: string
+          example: Spinach
+        Description:
+          type: string
+          example: Raises inflicted damage by 10%
+        UnlockRequirements:
+          type: string
+          example: Unlocked by default
+        Dlc:
+          type: string
+          example: Base
+        MaxLevel:
+          type: integer
+          example: 8
+        Rarity:
+          type: integer
+          example: 100
+    Dlc:
+      required:
+        - Id
+        - Name
+      type: object
+      properties:
+        Id:
+          type: integer
+          example: 10
+        Name:
+          type: string
+          example: Tides of the Foscari

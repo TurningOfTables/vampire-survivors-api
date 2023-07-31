@@ -84,7 +84,7 @@ func getWeapons(c *fiber.Ctx, db *sql.DB) error {
 	rows, err := db.Query("SELECT * from weapons")
 	if err != nil {
 		log.Warn(err)
-		return c.JSON("Error reading weapons from db")
+		return c.Status(500).JSON("Error reading weapons from db")
 	}
 	defer rows.Close()
 
@@ -132,7 +132,7 @@ func getPassiveItems(c *fiber.Ctx, db *sql.DB) error {
 	rows, err := db.Query("SELECT * from passiveitems")
 	if err != nil {
 		log.Warn(err)
-		return c.JSON("Error reading passive items from db")
+		return c.Status(500).JSON("Error reading passive items from db")
 	}
 
 	defer rows.Close()
