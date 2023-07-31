@@ -9,7 +9,7 @@ import (
 	"github.com/lib/pq"
 )
 
-var dbStr string = "postgresql://postgres:pass@localhost:5432/vsapi?sslmode=disable"
+var dbStr string = "postgresql://postgres:pass@db:5432/vsapi?sslmode=disable"
 var port string = "8000"
 
 type Weapon struct {
@@ -55,6 +55,7 @@ func initApp() *fiber.App {
 	}
 
 	app := fiber.New()
+	app.Static("/", "./docs")
 
 	app.Get("/weapons", func(c *fiber.Ctx) error {
 

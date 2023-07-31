@@ -13,6 +13,15 @@ import (
 
 var endpoints = []string{"/weapons", "/passiveitems", "/dlcs"}
 
+func TestIndex(t *testing.T) {
+	t.Parallel()
+	app := initApp()
+	req := httptest.NewRequest("GET", "/", nil)
+	resp, _ := app.Test(req)
+
+	assert.Equal(t, 200, resp.StatusCode, "GET to index expects 200")
+}
+
 func TestNonExistentRoute(t *testing.T) {
 	t.Parallel()
 	app := initApp()
