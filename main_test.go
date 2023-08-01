@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,7 +50,7 @@ func TestGetWeaponByName(t *testing.T) {
 
 func TestPostWeapons(t *testing.T) {
 	t.Parallel()
-	postBody := []Weapon{{Uuid: "abc", Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", BaseDamage: 10.5, MaxLevel: 5, Rarity: 50, Evolution: "Test Evolution", EvolvedWith: pq.StringArray{"Test Evolved With"}}}
+	postBody := []Weapon{{Uuid: "abc", Name: "Test Name", Description: "Test Description", UnlockRequirements: "Test Unlock Requirements", Dlc: "Base", BaseDamage: 10.5, MaxLevel: 5, Rarity: 50, Evolution: "Test Evolution", EvolvedWith: "Test Thing 1,Test Thing 2"}}
 	json, err := json.Marshal(postBody)
 	if err != nil {
 		fmt.Println("Error encoding JSON body")
@@ -141,43 +140,7 @@ func TestPostDlcs(t *testing.T) {
 	assert.Equalf(t, 201, resp.StatusCode, "POST to /dlcs expects 201")
 }
 
-func TestIsValidWeaponField(t *testing.T) {
-	t.Parallel()
-
-	var tests = []struct {
-		searchText string
-		expected   bool
-		message    string
-	}{
-		{
-			searchText: "name",
-			expected:   true,
-			message:    "Expect name to exist as a field on weapon struct",
-		},
-		{
-			searchText: "foo",
-			expected:   false,
-			message:    "Expect foo to not exist as a field on weapon struct",
-		},
-		{
-			searchText: "Name",
-			expected:   true,
-			message:    "Expect Name to exist as a field on weapon struct",
-		},
-		{
-			searchText: "NAME",
-			expected:   true,
-			message:    "Expect NAME to exist as a field on weapon struct",
-		},
-	}
-
-	for _, test := range tests {
-		res := isValidWeaponField(test.searchText)
-		assert.Equal(t, test.expected, res, test.message)
-	}
-}
-
-func TestIsValidStructField(t *testing.T) {
+func TestIsValidSearchField(t *testing.T) {
 	t.Parallel()
 
 	var tests = []struct {
@@ -213,7 +176,7 @@ func TestIsValidStructField(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		res := isValidStructField(test.searchText, test.testStruct)
+		res := isValidSearchField(test.searchText, test.testStruct)
 		assert.Equal(t, test.expected, res, test.message)
 	}
 }
