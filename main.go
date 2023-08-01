@@ -59,31 +59,25 @@ func initApp() *fiber.App {
 
 	app := fiber.New()
 	app.Static("/", "./docs")
-
 	app.Get("/weapons", func(c *fiber.Ctx) error {
 		return getWeapons(c, db)
-	})
 
+	})
 	app.Post("/weapons", func(c *fiber.Ctx) error {
 		return postWeapons(c, db)
 	})
-
-	app.Get("/weapon/:name", func(c *fiber.Ctx) error {
+	app.Get("/weapons/name/:name", func(c *fiber.Ctx) error {
 		return getWeaponByName(c, db)
 	})
-
 	app.Get("/passiveitems", func(c *fiber.Ctx) error {
 		return getPassiveItems(c, db)
 	})
-
 	app.Post("/passiveitems", func(c *fiber.Ctx) error {
 		return postPassiveItems(c, db)
 	})
-
 	app.Get("/dlcs", func(c *fiber.Ctx) error {
 		return getDlcs(c, db)
 	})
-
 	app.Post("/dlcs", func(c *fiber.Ctx) error {
 		return postDlcs(c, db)
 	})
@@ -120,8 +114,7 @@ func getWeaponByName(c *fiber.Ctx, db *sql.DB) error {
 	if name == "" {
 		return c.Status(400).JSON("Error - query param not found")
 	}
-	cr := cases.Title(language.English)
-	name = cr.String(name)
+	name = titleCase(name)
 
 	rows, err := db.Query("SELECT * from weapons WHERE name = $1", name)
 	if err != nil {
@@ -263,4 +256,9 @@ func generateUUID() string {
 	}
 
 	return uuid.String()
+}
+
+func titleCase(text string) string {
+	cr := cases.Title(language.English)
+	return cr.String(text)
 }

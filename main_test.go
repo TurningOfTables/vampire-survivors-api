@@ -40,10 +40,10 @@ func TestGetWeapons(t *testing.T) {
 	assert.Equal(t, 200, resp.StatusCode, "GET to /weapons expects 200")
 }
 
-func TestGetWeaponById(t *testing.T) {
+func TestGetWeaponByName(t *testing.T) {
 	t.Parallel()
 	app := initApp()
-	req := httptest.NewRequest("GET", "/weapon/whip", nil)
+	req := httptest.NewRequest("GET", "/weapons/name/whip", nil)
 	resp, _ := app.Test(req)
 
 	assert.Equal(t, 200, resp.StatusCode, "GET to /weapon/whip expects 200")

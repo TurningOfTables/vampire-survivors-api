@@ -13,3 +13,6 @@ clean:
 
 db-init:
 	docker exec -e POSTGRES_PASSWORD=pass -i vsapiv2-db-1 psql -p 5432 -U postgres vsapi < ./dbschema.sql
+
+regen-openapi-html:
+	npx openapi-generator-cli generate -g html2 -i docs/openapi.yaml -o docs

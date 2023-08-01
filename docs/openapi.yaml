@@ -57,6 +57,33 @@ paths:
           description: Invalid request format
         '500':
           description: Error creating new weapon
+  /weapons/name/{name}:
+    get:
+      tags:
+        - weapons
+      summary: Get weapon(s) by name
+      description: Retrieve one or more weapons that match the name parameter
+      operationId: getWeaponsByName
+      parameters:
+        - in: path
+          name: name
+          schema:
+            type: string
+            example: whip
+          required: true
+          description: Name of the weapon to search for
+          
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Weapon'
+        '404':
+          description: No weapons found with given name
   /passiveitems:
     get:
       tags:

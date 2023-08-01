@@ -983,6 +983,9 @@ ul.nav-tabs {
                     <li data-group="Weapons" data-name="getWeapons" class="">
                       <a href="#api-Weapons-getWeapons">getWeapons</a>
                     </li>
+                    <li data-group="Weapons" data-name="getWeaponsByName" class="">
+                      <a href="#api-Weapons-getWeaponsByName">getWeaponsByName</a>
+                    </li>
           </ul>
         </nav>
       </div>
@@ -3055,6 +3058,365 @@ pub fn main() {
 
 
                             <div class="tab-content" id="responses-Weapons-getWeapons-500-wrapper" style='margin-bottom: 10px;'>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Weapons-getWeaponsByName">
+                      <article id="api-Weapons-getWeaponsByName-0" data-group="User" data-name="getWeaponsByName" data-version="0">
+                        <div class="pull-left">
+                          <h1>getWeaponsByName</h1>
+                          <p>Get weapon(s) by name</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">Retrieve one or more weapons that match the name parameter</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/weapons/name/{name}</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Weapons-getWeaponsByName-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Weapons-getWeaponsByName-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Weapons-getWeaponsByName-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Weapons-getWeaponsByName-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Weapons-getWeaponsByName-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET \
+ -H "Accept: application/json" \
+ "http://localhost/weapons/name/{name}"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.WeaponsApi;
+
+import java.io.File;
+import java.util.*;
+
+public class WeaponsApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        WeaponsApi apiInstance = new WeaponsApi();
+        String name = whip; // String | Name of the weapon to search for
+
+        try {
+            array[Weapon] result = apiInstance.getWeaponsByName(name);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling WeaponsApi#getWeaponsByName");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.WeaponsApi;
+
+public class WeaponsApiExample {
+    public static void main(String[] args) {
+        WeaponsApi apiInstance = new WeaponsApi();
+        String name = whip; // String | Name of the weapon to search for
+
+        try {
+            array[Weapon] result = apiInstance.getWeaponsByName(name);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling WeaponsApi#getWeaponsByName");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+WeaponsApi *apiInstance = [[WeaponsApi alloc] init];
+String *name = whip; // Name of the weapon to search for (default to null)
+
+// Get weapon(s) by name
+[apiInstance getWeaponsByNameWith:name
+              completionHandler: ^(array[Weapon] output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var VampireSurvivorsOpenApi30 = require('vampire_survivors_open_api_3_0');
+
+// Create an instance of the API class
+var api = new VampireSurvivorsOpenApi30.WeaponsApi()
+var name = whip; // {String} Name of the weapon to search for
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getWeaponsByName(name, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getWeaponsByNameExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new WeaponsApi();
+            var name = whip;  // String | Name of the weapon to search for (default to null)
+
+            try {
+                // Get weapon(s) by name
+                array[Weapon] result = apiInstance.getWeaponsByName(name);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling WeaponsApi.getWeaponsByName: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\WeaponsApi();
+$name = whip; // String | Name of the weapon to search for
+
+try {
+    $result = $api_instance->getWeaponsByName($name);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling WeaponsApi->getWeaponsByName: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::WeaponsApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::WeaponsApi->new();
+my $name = whip; # String | Name of the weapon to search for
+
+eval {
+    my $result = $api_instance->getWeaponsByName(name => $name);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling WeaponsApi->getWeaponsByName: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.WeaponsApi()
+name = whip # String | Name of the weapon to search for (default to null)
+
+try:
+    # Get weapon(s) by name
+    api_response = api_instance.get_weapons_by_name(name)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling WeaponsApi->getWeaponsByName: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Weapons-getWeaponsByName-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate WeaponsApi;
+
+pub fn main() {
+    let name = whip; // String
+
+    let mut context = WeaponsApi::Context::default();
+    let result = client.getWeaponsByName(name, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+                            <div class="methodsubtabletitle">Path parameters</div>
+                            <table id="methodsubtable">
+                                <tr>
+                                  <th width="150px">Name</th>
+                                  <th>Description</th>
+                                </tr>
+                                  <tr><td style="width:150px;">name*</td>
+<td>
+
+
+    <div id="d2e199_getWeaponsByName_name">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+Name of the weapon to search for
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Weapons-getWeaponsByName-title-200"></h3>
+                            <p id="examples-Weapons-getWeaponsByName-description-200" class="marked"></p>
+                            <script>
+                              var responseWeapons200_description = `Successful operation`;
+                              var responseWeapons200_description_break = responseWeapons200_description.indexOf('\n');
+                              if (responseWeapons200_description_break == -1) {
+                                $("#examples-Weapons-getWeaponsByName-title-200").text("Status: 200 - " + responseWeapons200_description);
+                              } else {
+                                $("#examples-Weapons-getWeaponsByName-title-200").text("Status: 200 - " + responseWeapons200_description.substring(0, responseWeapons200_description_break));
+                                $("#examples-Weapons-getWeaponsByName-description-200").html(responseWeapons200_description.substring(responseWeapons200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Weapons-getWeaponsByName-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Weapons-getWeaponsByName-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Weapons-getWeaponsByName-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Weapons-getWeaponsByName-200-schema">
+                                  <div id="responses-Weapons-getWeaponsByName-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Weapons-getWeaponsByName-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Weapons-getWeaponsByName-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Weapons-getWeaponsByName-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                            <h3 id="examples-Weapons-getWeaponsByName-title-404"></h3>
+                            <p id="examples-Weapons-getWeaponsByName-description-404" class="marked"></p>
+                            <script>
+                              var responseWeapons404_description = `No weapons found with given name`;
+                              var responseWeapons404_description_break = responseWeapons404_description.indexOf('\n');
+                              if (responseWeapons404_description_break == -1) {
+                                $("#examples-Weapons-getWeaponsByName-title-404").text("Status: 404 - " + responseWeapons404_description);
+                              } else {
+                                $("#examples-Weapons-getWeaponsByName-title-404").text("Status: 404 - " + responseWeapons404_description.substring(0, responseWeapons404_description_break));
+                                $("#examples-Weapons-getWeaponsByName-description-404").html(responseWeapons404_description.substring(responseWeapons404_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Weapons-getWeaponsByName-404" class="nav nav-tabs nav-tabs-examples" >
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Weapons-getWeaponsByName-404-wrapper" style='margin-bottom: 10px;'>
                             </div>
                         </article>
                       </div>
