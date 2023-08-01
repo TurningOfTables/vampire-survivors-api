@@ -140,3 +140,80 @@ func TestPostDlcs(t *testing.T) {
 
 	assert.Equalf(t, 201, resp.StatusCode, "POST to /dlcs expects 201")
 }
+
+func TestIsValidWeaponField(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		searchText string
+		expected   bool
+		message    string
+	}{
+		{
+			searchText: "name",
+			expected:   true,
+			message:    "Expect name to exist as a field on weapon struct",
+		},
+		{
+			searchText: "foo",
+			expected:   false,
+			message:    "Expect foo to not exist as a field on weapon struct",
+		},
+		{
+			searchText: "Name",
+			expected:   true,
+			message:    "Expect Name to exist as a field on weapon struct",
+		},
+		{
+			searchText: "NAME",
+			expected:   true,
+			message:    "Expect NAME to exist as a field on weapon struct",
+		},
+	}
+
+	for _, test := range tests {
+		res := isValidWeaponField(test.searchText)
+		assert.Equal(t, test.expected, res, test.message)
+	}
+}
+
+func TestIsValidStructField(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		testStruct interface{}
+		searchText string
+		expected   bool
+		message    string
+	}{
+		{
+			testStruct: Weapon{},
+			searchText: "name",
+			expected:   true,
+			message:    "Expect name to exist as a field on weapon struct",
+		},
+		{
+			testStruct: Weapon{},
+			searchText: "foo",
+			expected:   false,
+			message:    "Expect foo to not exist as a field on weapon struct",
+		},
+		{
+			testStruct: PassiveItem{},
+			searchText: "name",
+			expected:   true,
+			message:    "Expect name to exist as a field on passiveitem struct",
+		},
+		{
+			testStruct: Dlc{},
+			searchText: "rarity",
+			expected:   false,
+			message:    "Expect rarity to not exist as a field on dlc struct",
+		},
+	}
+
+	for _, test := range tests {
+		res := isValidStructField(test.searchText, test.testStruct)
+		assert.Equal(t, test.expected, res, test.message)
+	}
+}

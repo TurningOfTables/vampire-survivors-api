@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -66,8 +68,8 @@ func initApp() *fiber.App {
 	app.Post("/weapons", func(c *fiber.Ctx) error {
 		return postWeapons(c, db)
 	})
-	app.Get("/weapons/name/:name", func(c *fiber.Ctx) error {
-		return getWeaponByName(c, db)
+	app.Get("/weapons/:searchField/:searchValue", func(c *fiber.Ctx) error {
+		return getWeaponBySearch(c, db)
 	})
 	app.Get("/passiveitems", func(c *fiber.Ctx) error {
 		return getPassiveItems(c, db)
@@ -108,18 +110,22 @@ func getWeapons(c *fiber.Ctx, db *sql.DB) error {
 
 }
 
-func getWeaponByName(c *fiber.Ctx, db *sql.DB) error {
+func getWeaponBySearch(c *fiber.Ctx, db *sql.DB) error {
 	var weapons []Weapon
-	name := c.Params("name")
-	if name == "" {
-		return c.Status(400).JSON("Error - query param not found")
-	}
-	name = titleCase(name)
+	weaponField := c.Params("searchField")
+	weaponValue := c.Params("searchValue")
 
-	rows, err := db.Query("SELECT * from weapons WHERE name = $1", name)
+	weaponValue = titleCase(weaponValue)
+	query, err := dangerouslyFormSqlWeaponSearch(weaponField, weaponValue, db)
+	if err != nil {
+		log.Error(err)
+	}
+	fmt.Println(query)
+
+	rows, err := db.Query(query)
 	if err != nil {
 		log.Warn(err)
-		return c.Status(500).JSON("Error finding weapon by name")
+		return c.Status(500).JSON("Error searching for weapon")
 	}
 	defer rows.Close()
 
@@ -261,4 +267,40 @@ func generateUUID() string {
 func titleCase(text string) string {
 	cr := cases.Title(language.English)
 	return cr.String(text)
+}
+
+// Only form SQL if the field exists, but is the wrong way to do this anyway
+func dangerouslyFormSqlWeaponSearch(weaponField, weaponValue string, db *sql.DB) (string, error) {
+	if isValidWeaponField(weaponField) {
+		query := fmt.Sprintf("SELECT * FROM weapons WHERE %v = '%v'", weaponField, weaponValue)
+		return query, nil
+	}
+
+	return "", errors.New("error forming SQL for weapon search")
+}
+
+func isValidWeaponField(weaponField string) bool {
+	var w Weapon
+	t := reflect.TypeOf(w)
+	weaponField = titleCase(weaponField)
+
+	for i := 0; i < t.NumField(); i++ {
+		if t.Field(i).Name == weaponField {
+			return true
+		}
+	}
+	return false
+}
+
+func isValidStructField(field string, s interface{}) bool {
+	t := reflect.TypeOf(s)
+	field = titleCase(field)
+
+	for i := 0; i < t.NumField(); i++ {
+		if t.Field(i).Name == field {
+			return true
+		}
+	}
+
+	return false
 }
