@@ -20,6 +20,8 @@ See Makefile for useful commands, including creating tables and data from dbsche
 
 By default binds to 0.0.0.0 on port 8000
 
+**Note there is no meaningful password on the SQL database and testing authentication info is currently stored in plain text rather than in an env var or any secure way.**
+
 ## Attributions
 
 [Fiber web framework](https://gofiber.io)
