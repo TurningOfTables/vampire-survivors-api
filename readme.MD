@@ -8,12 +8,6 @@ Uses Go with the Fiber framework to provide an API for querying information abou
 
 ## Notes
 
-Run standalone (and without a database) with `go run main.go`
-
-Init the tables from the schema (with no data) using `psql -U postgres -d vsapi -f db_schema.sql`
-
-Init the tables from the schema (with data) using `psql -U postgres -d vsapi -f db_dump.sql`
-
 Should also run with the included experimental Dockerfile
 
 See Makefile for useful commands, including creating tables and data from dbschema.sql
