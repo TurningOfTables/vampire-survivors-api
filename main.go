@@ -1,24 +1,21 @@
 package main
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
 	"reflect"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var dbStr string = "postgresql://postgres:pass@localhost:5432/vsapi?sslmode=disable"
-var port string = "8000"
-
 type Weapon struct {
-	Name               string
+	gorm.Model
+	Name               string `gorm:"unique"`
 	Description        string
 	UnlockRequirements string
 	Dlc                string
@@ -26,12 +23,13 @@ type Weapon struct {
 	MaxLevel           int
 	Rarity             int
 	Evolution          string
-	EvolvedWith        pq.StringArray
+	EvolvedWith        string
 	Uuid               string
 }
 
 type PassiveItem struct {
-	Name               string
+	gorm.Model
+	Name               string `gorm:"unique"`
 	Description        string
 	UnlockRequirements string
 	Dlc                string
@@ -41,9 +39,12 @@ type PassiveItem struct {
 }
 
 type Dlc struct {
-	Name string
+	gorm.Model
+	Name string `gorm:"unique"`
 	Uuid string
 }
+
+var port string = "8000"
 
 func main() {
 	log.SetLevel(log.LevelInfo)
@@ -54,13 +55,18 @@ func main() {
 }
 
 func initApp() *fiber.App {
-	db, err := sql.Open("postgres", dbStr)
+	db, err := gorm.Open(sqlite.Open("data.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	app := fiber.New()
 	app.Static("/", "./docs")
+
+	db.AutoMigrate(&Weapon{})
+	db.AutoMigrate(&PassiveItem{})
+	db.AutoMigrate(&Dlc{})
+
 	app.Get("/weapons", func(c *fiber.Ctx) error {
 		return getWeapons(c, db)
 
@@ -87,61 +93,34 @@ func initApp() *fiber.App {
 	return app
 }
 
-func getWeapons(c *fiber.Ctx, db *sql.DB) error {
+func getWeapons(c *fiber.Ctx, db *gorm.DB) error {
 	var weapons []Weapon
 
-	rows, err := db.Query("SELECT * from weapons")
+	rows, err := db.Find(&weapons).Rows()
 	if err != nil {
 		log.Warn(err)
-		return c.Status(500).JSON("Error reading weapons from db")
+		return c.Status(fiber.StatusInternalServerError).JSON("Error getting weapons from database")
 	}
 	defer rows.Close()
-
-	for rows.Next() {
-		var w Weapon
-		err := rows.Scan(&w.Name, &w.Description, &w.UnlockRequirements, &w.Dlc, &w.BaseDamage, &w.MaxLevel, &w.Rarity, &w.Evolution, &w.EvolvedWith, &w.Uuid)
-		if err != nil {
-			log.Warn(err)
-		}
-
-		weapons = append(weapons, w)
-	}
-	return c.JSON(weapons)
-
-}
-
-func getWeaponBySearch(c *fiber.Ctx, db *sql.DB) error {
-	var weapons []Weapon
-	weaponField := c.Params("searchField")
-	weaponValue := c.Params("searchValue")
-
-	weaponValue = titleCase(weaponValue)
-	query, err := dangerouslyFormSqlWeaponSearch(weaponField, weaponValue, db)
-	if err != nil {
-		log.Error(err)
-	}
-	fmt.Println(query)
-
-	rows, err := db.Query(query)
-	if err != nil {
-		log.Warn(err)
-		return c.Status(500).JSON("Error searching for weapon")
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var w Weapon
-		err := rows.Scan(&w.Name, &w.Description, &w.UnlockRequirements, &w.Dlc, &w.BaseDamage, &w.MaxLevel, &w.Rarity, &w.Evolution, &w.EvolvedWith, &w.Uuid)
-		if err != nil {
-			log.Warn(err)
-		}
-		weapons = append(weapons, w)
-	}
-
 	return c.JSON(weapons)
 }
 
-func postWeapons(c *fiber.Ctx, db *sql.DB) error {
+func getWeaponBySearch(c *fiber.Ctx, db *gorm.DB) error {
+	var weapons []Weapon
+	searchField := c.Params("searchField")
+	searchValue := c.Params("searchValue")
+
+	if !isValidSearchField(searchField, Weapon{}) {
+		return c.Status(fiber.StatusBadRequest).JSON("Invalid search field")
+	}
+
+	if err := db.Where(searchField+" = ?", titleCase(searchValue)).Find(&weapons).Error; err != nil {
+		fmt.Println(err)
+	}
+	return c.JSON(weapons)
+}
+
+func postWeapons(c *fiber.Ctx, db *gorm.DB) error {
 	var weapons []Weapon
 
 	if err := c.BodyParser(&weapons); err != nil {
@@ -153,40 +132,28 @@ func postWeapons(c *fiber.Ctx, db *sql.DB) error {
 		uuid := generateUUID()
 		w.Uuid = uuid
 		log.Infof("Inserting %v", w)
-		_, err := db.Exec("INSERT into weapons (uuid, name, description, unlockrequirements, dlc, basedamage, maxlevel, rarity, evolution, evolvedwith) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)", w.Uuid, w.Name, w.Description, w.UnlockRequirements, w.Dlc, w.BaseDamage, w.MaxLevel, w.Rarity, w.Evolution, pq.Array(w.EvolvedWith))
-		if err != nil {
+		if err := db.Create(&w).Error; err != nil {
 			log.Warn(err)
-			return c.Status(500).JSON("Error in POST /weapons creating new entry")
+			return c.Status(500).JSON("Error saving weapon to database")
 		}
 	}
 
 	return c.SendStatus(fiber.StatusCreated)
 }
 
-func getPassiveItems(c *fiber.Ctx, db *sql.DB) error {
+func getPassiveItems(c *fiber.Ctx, db *gorm.DB) error {
 	var passiveItems []PassiveItem
 
-	rows, err := db.Query("SELECT * from passiveitems")
+	rows, err := db.Find(&passiveItems).Rows()
 	if err != nil {
 		log.Warn(err)
-		return c.Status(500).JSON("Error reading passive items from db")
+		return c.Status(fiber.StatusInternalServerError).JSON("Error getting passiveItems from database")
 	}
-
 	defer rows.Close()
-
-	for rows.Next() {
-		var p PassiveItem
-		err := rows.Scan(&p.Name, &p.Description, &p.UnlockRequirements, &p.Dlc, &p.MaxLevel, &p.Rarity, &p.Uuid)
-		if err != nil {
-			log.Warn(err)
-		}
-
-		passiveItems = append(passiveItems, p)
-	}
 	return c.JSON(passiveItems)
 }
 
-func postPassiveItems(c *fiber.Ctx, db *sql.DB) error {
+func postPassiveItems(c *fiber.Ctx, db *gorm.DB) error {
 	var passiveItems []PassiveItem
 
 	if err := c.BodyParser(&passiveItems); err != nil {
@@ -198,41 +165,28 @@ func postPassiveItems(c *fiber.Ctx, db *sql.DB) error {
 		uuid := generateUUID()
 		p.Uuid = uuid
 		log.Infof("Inserting %v", p)
-
-		_, err := db.Exec("INSERT into passiveitems (uuid, name, description, unlockrequirements, dlc, maxlevel, rarity) VALUES ($1, $2, $3, $4, $5, $6, $7)", p.Uuid, p.Name, p.Description, p.UnlockRequirements, p.Dlc, p.MaxLevel, p.Rarity)
-		if err != nil {
+		if err := db.Create(&p).Error; err != nil {
 			log.Warn(err)
-			return c.Status(fiber.StatusInternalServerError).JSON("Error in POST /passiveitems creating new entry")
+			return c.Status(500).JSON("Error saving passive item to database")
 		}
 	}
 
 	return c.SendStatus(fiber.StatusCreated)
 }
 
-func getDlcs(c *fiber.Ctx, db *sql.DB) error {
+func getDlcs(c *fiber.Ctx, db *gorm.DB) error {
 	var dlcs []Dlc
 
-	rows, err := db.Query("SELECT * from dlcs")
+	rows, err := db.Find(&dlcs).Rows()
 	if err != nil {
 		log.Warn(err)
-		return c.JSON("Error reading dlc from db")
+		return c.Status(fiber.StatusInternalServerError).JSON("Error getting dlcs from database")
 	}
 	defer rows.Close()
-
-	for rows.Next() {
-		var d Dlc
-		err := rows.Scan(&d.Uuid, &d.Name)
-		if err != nil {
-			log.Warn(err)
-		}
-
-		dlcs = append(dlcs, d)
-	}
-
 	return c.JSON(dlcs)
 }
 
-func postDlcs(c *fiber.Ctx, db *sql.DB) error {
+func postDlcs(c *fiber.Ctx, db *gorm.DB) error {
 	var dlcs []Dlc
 
 	if err := c.BodyParser(&dlcs); err != nil {
@@ -245,10 +199,9 @@ func postDlcs(c *fiber.Ctx, db *sql.DB) error {
 		d.Uuid = uuid
 		log.Infof("Inserting %v", d)
 
-		_, err := db.Exec("INSERT into dlcs (uuid, name) VALUES ($1, $2)", d.Uuid, d.Name)
-		if err != nil {
+		if err := db.Create(&d).Error; err != nil {
 			log.Warn(err)
-			return c.Status(fiber.StatusInternalServerError).JSON("Error in POST /dlcs creating new entry")
+			return c.Status(fiber.StatusInternalServerError).JSON("Error saving dlc to database")
 		}
 	}
 
@@ -265,42 +218,18 @@ func generateUUID() string {
 }
 
 func titleCase(text string) string {
-	cr := cases.Title(language.English)
-	return cr.String(text)
+	cs := cases.Title(language.English)
+	return cs.String(text)
 }
 
-// Only form SQL if the field exists, but is the wrong way to do this anyway
-func dangerouslyFormSqlWeaponSearch(weaponField, weaponValue string, db *sql.DB) (string, error) {
-	if isValidWeaponField(weaponField) {
-		query := fmt.Sprintf("SELECT * FROM weapons WHERE %v = '%v'", weaponField, weaponValue)
-		return query, nil
-	}
-
-	return "", errors.New("error forming SQL for weapon search")
-}
-
-func isValidWeaponField(weaponField string) bool {
-	var w Weapon
-	t := reflect.TypeOf(w)
-	weaponField = titleCase(weaponField)
+func isValidSearchField(searchField string, i interface{}) bool {
+	t := reflect.TypeOf(i)
+	searchField = titleCase(searchField)
 
 	for i := 0; i < t.NumField(); i++ {
-		if t.Field(i).Name == weaponField {
+		if _, found := t.FieldByName(searchField); found {
 			return true
 		}
 	}
-	return false
-}
-
-func isValidStructField(field string, s interface{}) bool {
-	t := reflect.TypeOf(s)
-	field = titleCase(field)
-
-	for i := 0; i < t.NumField(); i++ {
-		if t.Field(i).Name == field {
-			return true
-		}
-	}
-
 	return false
 }
